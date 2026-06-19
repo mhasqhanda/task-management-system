@@ -253,7 +253,7 @@ function CreateTaskModal({
             <label className="text-slate-300 text-sm block mb-1.5">Description</label>
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 resize-none transition-all" placeholder="Optional description..." />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-slate-300 text-sm block mb-1.5">Project <span className="text-red-400">*</span></label>
               <select value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50">
@@ -504,11 +504,11 @@ function TaskDetailDrawer({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex">
+    <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop */}
-      <div className="flex-1 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       {/* Drawer */}
-      <div className="w-full max-w-md bg-[#0e0e1a] border-l border-white/10 flex flex-col shadow-2xl animate-slide-in">
+      <div className="relative w-full sm:max-w-md bg-[#0e0e1a] border-l border-white/10 flex flex-col h-full shadow-2xl animate-slide-in">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-white/10">
           <div className="flex items-center gap-2">
@@ -591,7 +591,7 @@ function TaskDetailDrawer({
                         {(comment.userId === user?.id || isPM) && (
                           <button
                             onClick={() => deleteCommentMut.mutate(comment.id)}
-                            className="opacity-0 group-hover/comment:opacity-100 text-red-400/60 hover:text-red-400 transition-all text-xs"
+                            className="opacity-100 md:opacity-0 md:group-hover/comment:opacity-100 text-red-400/60 hover:text-red-400 transition-all text-xs p-1"
                             title="Delete comment"
                           >
                             ✕
@@ -651,6 +651,7 @@ export default function TasksPage() {
   const [detailTask, setDetailTask] = useState<Task | null>(null);
   const [filterProject, setFilterProject] = useState('');
   const [dragOverCol, setDragOverCol] = useState<TaskStatus | null>(null);
+  const [activeTab, setActiveTab] = useState<TaskStatus>('TODO');
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['tasks', filterProject],
@@ -772,10 +773,10 @@ export default function TasksPage() {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-white">Task Board</h1>
-          <div className="flex items-center gap-3 mt-1">
+          <div className="flex items-center gap-3 mt-1 flex-wrap">
             <p className="text-slate-400 text-sm">{total} tasks • {pct}% complete</p>
             {user?.role === 'INTERNAL_TEAM' && (
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/20 font-medium">
@@ -784,11 +785,11 @@ export default function TasksPage() {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
           <select
             value={filterProject}
             onChange={(e) => setFilterProject(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+            className="bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 flex-1 sm:flex-none"
           >
             <option value="" className="bg-[#13131f]">All Projects</option>
             {projects.map((p: any) => (
@@ -800,7 +801,7 @@ export default function TasksPage() {
             <button
               id="create-task-btn"
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-violet-500/25"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-violet-500/25 flex-1 sm:flex-none justify-center"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -829,51 +830,72 @@ export default function TasksPage() {
           <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-6">
-          {columns.map((col) => (
-            <div
-              key={col.status}
-              onDragOver={(e) => handleDragOver(e, col.status)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, col.status)}
-              className={`border rounded-xl p-4 transition-all duration-200 ${
-                dragOverCol === col.status ? col.borderGlow + ' ring-1 ring-white/10 scale-[1.01]' : col.color
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-sm">{col.icon}</span>
-                <h2 className="text-white font-semibold text-sm">{col.label}</h2>
-                <span className="ml-auto text-xs text-slate-500 bg-white/5 px-2 py-0.5 rounded-full">{col.tasks.length}</span>
-                {col.status === 'DONE' && user?.role === 'INTERNAL_TEAM' && (
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 border border-violet-500/20">PM only</span>
-                )}
+        <>
+          {/* Mobile Column Tabs */}
+          <div className="flex md:hidden bg-white/[0.02] border border-white/5 rounded-xl p-1 mb-5 gap-1">
+            {columns.map((col) => (
+              <button
+                key={col.status}
+                onClick={() => setActiveTab(col.status)}
+                className={`flex-1 py-2 text-xs font-semibold text-center rounded-lg transition-all ${
+                  activeTab === col.status
+                    ? 'bg-violet-500/15 text-violet-300 border border-violet-500/20'
+                    : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                {col.label} ({col.tasks.length})
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {columns.map((col) => (
+              <div
+                key={col.status}
+                onDragOver={(e) => handleDragOver(e, col.status)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, col.status)}
+                className={`border rounded-xl p-4 transition-all duration-200 ${
+                  activeTab === col.status ? 'block' : 'hidden md:block'
+                } ${
+                  dragOverCol === col.status ? col.borderGlow + ' ring-1 ring-white/10 scale-[1.01]' : col.color
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-sm">{col.icon}</span>
+                  <h2 className="text-white font-semibold text-sm">{col.label}</h2>
+                  <span className="ml-auto text-xs text-slate-500 bg-white/5 px-2 py-0.5 rounded-full">{col.tasks.length}</span>
+                  {col.status === 'DONE' && user?.role === 'INTERNAL_TEAM' && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 border border-violet-500/20">PM only</span>
+                  )}
+                </div>
+                <div className="space-y-3 min-h-[200px]">
+                  {col.tasks.map((task: Task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      user={user}
+                      onStatusChange={(id, status, version) =>
+                        updateMutation.mutate({ id, status, version })
+                      }
+                      onEdit={(t) => setEditingTask(t)}
+                      onDelete={(t) => setDeletingTask(t)}
+                      onViewDetails={(t) => setDetailTask(t)}
+                    />
+                  ))}
+                  {col.tasks.length === 0 && (
+                    <div className={`flex flex-col items-center justify-center h-32 border-2 border-dashed rounded-lg transition-all ${
+                      dragOverCol === col.status ? 'border-white/20 bg-white/[0.02]' : 'border-white/5'
+                    }`}>
+                      <span className="text-xl text-slate-700 mb-1">{col.icon}</span>
+                      <p className="text-slate-600 text-xs">{dragOverCol === col.status ? 'Drop here' : 'No tasks'}</p>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="space-y-3 min-h-[200px]">
-                {col.tasks.map((task: Task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    user={user}
-                    onStatusChange={(id, status, version) =>
-                      updateMutation.mutate({ id, status, version })
-                    }
-                    onEdit={(t) => setEditingTask(t)}
-                    onDelete={(t) => setDeletingTask(t)}
-                    onViewDetails={(t) => setDetailTask(t)}
-                  />
-                ))}
-                {col.tasks.length === 0 && (
-                  <div className={`flex flex-col items-center justify-center h-32 border-2 border-dashed rounded-lg transition-all ${
-                    dragOverCol === col.status ? 'border-white/20 bg-white/[0.02]' : 'border-white/5'
-                  }`}>
-                    <span className="text-xl text-slate-700 mb-1">{col.icon}</span>
-                    <p className="text-slate-600 text-xs">{dragOverCol === col.status ? 'Drop here' : 'No tasks'}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Create Task Modal */}

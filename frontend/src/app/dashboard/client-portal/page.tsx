@@ -40,7 +40,7 @@ export default function ClientPortalPage() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto px-4 md:px-0">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">My Client Portal</h1>
         <p className="text-slate-400 text-sm mt-1">Track your project progress in real time</p>
@@ -59,10 +59,10 @@ export default function ClientPortalPage() {
       </div>
 
       {/* Progress */}
-      <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+      <div className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-white font-semibold">Overall Completion</h2>
-          <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">{pct}%</span>
+          <h2 className="text-white font-semibold text-sm sm:text-base">Overall Completion</h2>
+          <span className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">{pct}%</span>
         </div>
         <div className="w-full bg-white/10 rounded-full h-3 mb-4">
           <div
@@ -70,11 +70,11 @@ export default function ClientPortalPage() {
             style={{ width: `${pct}%` }}
           />
         </div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           {statusConfig.map((s) => (
-            <div key={s.label} className="bg-white/5 rounded-lg p-3 text-center">
-              <div className={`text-2xl font-bold ${s.text}`}>{s.count}</div>
-              <div className="text-slate-500 text-xs mt-0.5">{s.label}</div>
+            <div key={s.label} className="bg-white/5 rounded-lg p-2 sm:p-3 text-center">
+              <div className={`text-lg sm:text-2xl font-bold ${s.text}`}>{s.count}</div>
+              <div className="text-slate-500 text-[10px] sm:text-xs mt-0.5">{s.label}</div>
             </div>
           ))}
         </div>
@@ -88,14 +88,14 @@ export default function ClientPortalPage() {
             <div className="text-center py-12 text-slate-600">No visible tasks yet</div>
           )}
           {tasks.map((task: Task) => (
-            <div key={task.id} className="bg-white/5 border border-white/10 rounded-xl px-5 py-4 flex items-center justify-between">
+            <div key={task.id} className="bg-white/5 border border-white/10 rounded-xl p-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h3 className="text-white text-sm font-medium">{task.title}</h3>
+                <h3 className="text-white text-sm font-medium leading-snug">{task.title}</h3>
                 <p className="text-slate-500 text-xs mt-0.5">
                   Assigned to: <span className="text-slate-400">Internal Member</span>
                 </p>
               </div>
-              <span className={`text-xs px-3 py-1 rounded-full font-medium border ${
+              <span className={`self-start sm:self-auto text-xs px-3 py-1 rounded-full font-medium border ${
                 task.status === 'DONE' ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/20' :
                 task.status === 'IN_PROGRESS' ? 'bg-amber-500/15 text-amber-300 border-amber-500/20' :
                 'bg-slate-500/15 text-slate-300 border-slate-500/20'
