@@ -1,32 +1,32 @@
 # TaskFlow - Enterprise Task Management System
 
-TaskFlow adalah sistem manajemen tugas (Task Management System) tingkat enterprise yang dibangun dengan arsitektur modern. Sistem ini dirancang untuk tim internal dan klien, dengan pemisahan hak akses yang ketat (Role-Based Access Control) dan fitur kolaborasi *real-time*.
+TaskFlow is an enterprise-grade Task Management System built with a modern architecture. This system is designed for both internal teams and external clients, featuring strict Role-Based Access Control (RBAC) and real-time collaborative capabilities.
 
-## 🚀 Fitur Utama
+## 🚀 Key Features
 
 - **Role-Based Access Control (RBAC) & Multi-tenancy**
-  - **Product Manager**: Memiliki kontrol penuh untuk membuat, mengedit, dan menghapus tugas/komentar. Dapat melihat semua proyek.
-  - **Internal Team (Developer/Designer/QA)**: Hanya dapat melihat tugas internal dan menggeser tugas yang ditugaskan kepada mereka di papan Kanban. Tidak dapat menandai tugas sebagai "Done".
-  - **Client Guest**: Akses terbatas hanya pada proyek klien yang bersangkutan. Hanya dapat melihat tugas yang ditandai sebagai `isClientVisible: true`.
-  - **Identity Masking**: Klien tidak akan melihat nama asli maupun departemen dari anggota tim internal pada tugas maupun di dalam kolom komentar (nama disamarkan menjadi "Internal Member").
+  - **Product Manager**: Has full control to create, edit, and delete tasks/comments. Can view all projects and manage all dependencies.
+  - **Internal Team (Developer/Designer/QA)**: Can only view internal tasks and move tasks assigned to them across the Kanban board. Cannot mark tasks as "Done".
+  - **Client Guest**: Restricted access to their respective projects only. Can only view tasks explicitly marked as `isClientVisible: true`.
+  - **Identity Masking**: Clients will not see the real names or departments of internal team members on tasks or in the comment thread (names are masked as "Internal Member").
 
 - **Interactive Kanban Board**
-  - Papan Kanban *drag-and-drop* bawaan (HTML5) yang mulus.
-  - Validasi *client-side* dan *server-side* untuk memastikan pengguna hanya dapat memindahkan tugas sesuai dengan peran dan penugasannya.
+  - Smooth, native HTML5 drag-and-drop Kanban board interface.
+  - Client-side and server-side validation to ensure users can only move tasks according to their assigned roles and permissions.
 
-- **Dependency Guard (Sistem Ketergantungan Tugas)**
-  - Tugas dapat saling memblokir. Jika sebuah tugas bergantung pada tugas lain, tugas tersebut tidak dapat dipindahkan ke status `IN_PROGRESS` atau `DONE` sampai semua tugas prasyaratnya telah selesai (`DONE`).
+- **Dependency Guard**
+  - Tasks can block one another. If a task depends on other prerequisite tasks, it cannot be moved to the `IN_PROGRESS` or `DONE` status until all of its dependencies are marked as `DONE`.
 
-- **Optimistic Locking (Pencegahan Konflik Data)**
-  - Setiap tugas memiliki nomor `version`. Jika dua pengguna mencoba mengubah tugas yang sama secara bersamaan, sistem akan menolak perubahan kedua dengan status `409 Conflict` untuk mencegah data saling tumpih tindih (overwriting).
+- **Optimistic Locking (Data Conflict Prevention)**
+  - Every task is tracked with a `version` number. If two users attempt to update the same task simultaneously, the system will reject the second update with a `409 Conflict` status to prevent data overwriting.
 
 - **Collaborative Comment Thread**
-  - Fitur laci (drawer) interaktif pada detail tugas yang berisi riwayat percakapan.
-  - Memungkinkan kolaborasi antara PM, Tim Internal, dan Klien.
-  - Penghapusan komentar dibatasi (hanya penulis atau PM).
+  - Interactive side-drawer on the task details view displaying the conversation history.
+  - Enables seamless collaboration between PMs, Internal Teams, and Clients.
+  - Restricted comment deletion (only the author or a PM can delete comments).
 
 - **Immutable Audit Trail**
-  - Sistem secara otomatis mencatat setiap perubahan pada tugas (POST, PATCH, DELETE) menggunakan *Global Interceptor* di sisi backend, menyimpan nilai lama dan nilai baru sebagai log audit permanen.
+  - The system automatically logs every modification to tasks (POST, PATCH, DELETE) using a Backend Global Interceptor. It records both the previous and new values, serving as a permanent audit log.
 
 ## 💻 Tech Stack
 
@@ -43,40 +43,40 @@ TaskFlow adalah sistem manajemen tugas (Task Management System) tingkat enterpri
 - [PostgreSQL](https://www.postgresql.org/)
 - [JWT Authentication](https://jwt.io/) & [Bcrypt](https://www.npmjs.com/package/bcrypt)
 
-**Infrastruktur**
-- Docker & Docker Compose (untuk database lokal)
+**Infrastructure**
+- Docker & Docker Compose (for local database environment)
 
-## 🛠 Instalasi & Menjalankan Aplikasi di Lokal
+## 🛠 Local Installation & Setup
 
-### 1. Prasyarat
+### 1. Prerequisites
 - [Node.js](https://nodejs.org/) v18+
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (untuk menjalankan PostgreSQL)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (to run PostgreSQL)
 
-### 2. Jalankan Database (Docker)
-Di folder root proyek, jalankan:
+### 2. Start the Database (Docker)
+In the project root directory, run:
 ```bash
 docker-compose up -d
 ```
 
-### 3. Setup Backend
-Buka terminal baru:
+### 3. Backend Setup
+Open a new terminal:
 ```bash
 cd backend
 npm install
 npx prisma migrate dev --name init
-npx ts-node prisma/seed.ts  # Mengisi data awal/dummy
+npx ts-node prisma/seed.ts  # Populates initial dummy data
 npm run start:dev
 ```
-Backend akan berjalan di `http://localhost:3001`
+The backend will run on `http://localhost:3001`
 
-### 4. Setup Frontend
-Buka terminal baru lainnya:
+### 4. Frontend Setup
+Open another new terminal:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-Frontend akan berjalan di `http://localhost:3000`
+The frontend will run on `http://localhost:3000`
 
 ---
-*Dibangun oleh tim Anda.*
+*Built with ❤️ by your team.*
